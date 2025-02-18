@@ -1,6 +1,5 @@
 export class Row {
   constructor(columns, layout) {
-    this.id = crypto.randomUUID();
     this.columns = columns;
     this.layout = layout;
 

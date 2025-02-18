@@ -17,6 +17,12 @@ export default {
     }
   },
 
+  computed: {
+    isDragging() {
+      return this.drag.columnId !== null
+    }
+  },
+
   methods: {
     removeHints () {
       const $leftHint = document.querySelector('.left-hint')
@@ -26,12 +32,23 @@ export default {
       $rightHint?.classList.remove('right-hint')
     },
 
+    reset() {
+      this.removeHints()
+      this.drag = {
+        columnId: null,
+        position: null,
+        targetId: null,
+      }
+    },
+
     onDragStart(columnId) {
       this.drag.columnId = columnId
     },
 
     onDragOver(event, rowIndex) {
       event.preventDefault()
+      event.dataTransfer.dropEffect = "move";
+      if (!this.isDragging) return
 
       const mouseX = event.clientX
 
@@ -59,8 +76,6 @@ export default {
       this.drag.targetId = Number($closestColumn.dataset.columnId)
       this.drag.position = isMouseOnLeftHalf ? 'before' : 'after'
 
-      console.log(this.drag.columnId, this.drag.position, this.drag.targetId)
-
       this.removeHints()
       if (isMouseOnLeftHalf) {
         $closestColumn.classList.add('left-hint')
@@ -71,23 +86,22 @@ export default {
 
     onDragDrop(event) {
       event.preventDefault()
+      if (!this.isDragging) return
+
       this.form.moveColumn(this.drag.columnId, this.drag.position, this.drag.targetId)
-      this.onDragEnd()
+      this.reset()
     },
 
     onDragDropNewRow(event) {
       event.preventDefault()
+      if (!this.isDragging) return
+      
       this.form.addColumnToNewRow(this.drag.columnId)
-      this.onDragEnd()
+      this.reset()
     },
 
     onDragEnd() {
-      this.drag = {
-        columnId: null,
-        position: null,
-        targetId: null,
-      }
-      this.removeHints()
+      this.reset()
     }
   }
 }
@@ -114,19 +128,21 @@ export default {
             :data-column-id="column.metadata.id"
           >
             <component :is="components[column.metadata.type]" :data="column" />
+            <div class="component-film"></div>
           </li>
         </ul>
-
-        <div v-if="rowIndex === form.rows.length - 1" @drop="onDragDropNewRow" @dragover.prevent="">
-          new row here
-        </div>
       </li>
     </ul>
+
+    <section class="drop-area" :class="{ 'is-dragging': isDragging }" @drop="onDragDropNewRow" @dragover.prevent="">
+    </section>
   </form>
 </template>
 
 <style scoped>
 .grid-metadata-form {
+  overflow: hidden;
+
   .row-container {
     display: flex;
     flex-direction: column;
@@ -146,33 +162,66 @@ export default {
     gap: 20px;
     padding: 0;
 
-    li {
+    .metadata-container {
       width: var(--width);
       margin-left: var(--offset);
       position: relative;
       transition: margin-left 0.3s;
       display: flex;
 
-      &.left-hint::before {
+      &::before {
         content: '';
+        position: absolute;
         display: block;
-        background-color: #3d8bff;
+        background-color: transparent;
         width: 4px;
         height: 100%;
         border-radius: 2px;
         box-sizing: border-box;
-        margin-right: 12px;
+        left: -12px;
+        transition: all 225ms;
+      }
+
+      &.left-hint::before {
+        background-color: #3d8bff;
+      }
+
+      &:first-child.left-hint::before {
+        left: -12px;
+        margin-left: 12px;
+        position: relative;
+      }
+
+      &::after {
+        content: '';
+        display: block;
+        position: absolute;
+        background-color: transparent;
+        width: 4px;
+        height: 100%;
+        border-radius: 2px;
+        box-sizing: border-box;
+        right: -12px;
+        transition: all 225ms;
       }
 
       &.right-hint::after {
-        content: '';
-        display: block;
         background-color: #3d8bff;
-        width: 4px;
-        height: 100%;
-        border-radius: 2px;
-        box-sizing: border-box;
-        margin-left: 12px;
+      } 
+
+      &:last-child.right-hint::after {
+        right: -12px;
+        margin-right: 12px;
+        position: relative;
+      }
+
+      .component-film {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        cursor: move;
       }
 
       &.is-dragging {
@@ -180,6 +229,21 @@ export default {
           opacity: 0.2;
         }
       }
+    }
+  }
+
+  .drop-area {
+    display: block;
+    width: 100%;
+    height: 36px;
+    background-color: #faf9f9;
+    border: 2px dashed #4b93ff;
+    border-radius: 4px;
+    transition: opacity 300ms ease-in-out;
+    opacity: 0;
+
+    &.is-dragging {
+      opacity: 1;
     }
   }
 }

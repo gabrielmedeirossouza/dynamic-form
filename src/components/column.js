@@ -1,6 +1,5 @@
 export class Column {
   constructor(metadata, layout) {
-    this.id = crypto.randomUUID();
     this.metadata = metadata;
     this.layout = layout;
   }
