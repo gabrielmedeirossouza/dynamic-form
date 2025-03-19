@@ -1,5 +1,5 @@
 <script>
-import { fakeForm } from './fake-form'
+import { fakeForm } from './fake-user-profile-gateway'
 
 export default {
   name: 'GridMetadataForm',
@@ -17,7 +17,7 @@ export default {
 <template>
   <form class="grid-metadata-form">
     <ul class="row-container">
-      <li v-for="(row, rowIndex) in form.rows" :key="rowIndex">
+      <li v-for="(row, rowIndex) in form.#rows" :key="rowIndex">
         <ul class="column-container">
           <li v-for="(column, columnIndex) in row.columns" :key="columnIndex" :style="{ '--width': column.layout.width, '--offset': column.layout.offset ?? '0' }">
             <component

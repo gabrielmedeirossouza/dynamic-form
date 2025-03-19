@@ -10,7 +10,7 @@ export default {
 <template>
   <div class="text-metadata" :class="{ disabled: !data.metadata.active }">
     <label :for="data.metadata.id">{{ data.metadata.label }}</label>
-    <input :id="data.metadata.id" type="text" :placeholder="data.metadata.presentation.placeholder" />
+    <input :id="data.metadata.id" type="text" :placeholder="data.metadata.presentation?.placeholder" />
   </div>
 </template>
 
