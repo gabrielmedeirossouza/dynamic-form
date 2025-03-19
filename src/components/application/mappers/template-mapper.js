@@ -1,4 +1,4 @@
-import { Template } from "../domain/form/template";
+import { Template } from "../../domain/form/template";
 import { RowMapper } from "./row-mapper";
 import { TemplateLayoutMapper } from "./template-layout-mapper";
 

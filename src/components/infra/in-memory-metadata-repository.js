@@ -1,5 +1,4 @@
-import { MetadataMapper } from "../application-mappers/metadata-mapper"
-import { Metadata } from "../domain/metadata/metadata"
+import { MetadataMapper } from "../application/mappers/metadata-mapper"
 
 export class InMemoryMetadataRepository {
   static #mappedMetadataList = []

@@ -1,4 +1,4 @@
-import { MetadataRepositoryRegistry } from "../repositories/metadata-repository-registry"
+import { MetadataRepositoryRegistry } from "../metadata-repository-registry"
 
 export class ChangeColumnTypeUseCase {
   execute(formId, templateId, columnId, type) {

@@ -1,4 +1,4 @@
-import { MetadataRepositoryRegistry } from "../repositories/metadata-repository-registry"
+import { MetadataRepositoryRegistry } from "../metadata-repository-registry"
 
 export class CheckTemplateIsValidUseCase {
   execute(formId, templateId) {

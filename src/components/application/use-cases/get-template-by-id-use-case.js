@@ -1,5 +1,5 @@
-import { TemplateMapper } from "../application-mappers/template-mapper";
-import { MetadataRepositoryRegistry } from "../repositories/metadata-repository-registry";
+import { TemplateMapper } from "../mappers/template-mapper"
+import { MetadataRepositoryRegistry } from "../metadata-repository-registry"
 
 export class GetTemplateByIdUseCase {
   execute(formId, templateId) {

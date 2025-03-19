@@ -1,6 +1,6 @@
-import { Template } from "../domain/form/template"
-import { TemplateMapper } from "../application-mappers/template-mapper"
-import { MetadataRepositoryRegistry } from "../repositories/metadata-repository-registry"
+import { Template } from "../../domain/form/template"
+import { TemplateMapper } from "../mappers/template-mapper"
+import { MetadataRepositoryRegistry } from "../metadata-repository-registry"
 
 export class CreateDraftTemplateUseCase {
   execute(formId, templateId) {

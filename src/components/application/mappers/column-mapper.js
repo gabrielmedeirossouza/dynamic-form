@@ -1,4 +1,4 @@
-import { Column } from "../domain/form/column";
+import { Column } from "../../domain/form/column";
 import { ColumnLayoutMapper } from "./column-layout-mapper";
 
 export class ColumnMapper {

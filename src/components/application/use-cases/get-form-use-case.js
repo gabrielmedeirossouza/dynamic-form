@@ -1,5 +1,5 @@
-import { FormMapper } from "../application-mappers/form-mapper"
-import { MetadataRepositoryRegistry } from "../repositories/metadata-repository-registry"
+import { FormMapper } from "../mappers/form-mapper"
+import { MetadataRepositoryRegistry } from "../metadata-repository-registry"
 
 export class GetFormUseCase {
   execute(formId) {

@@ -1,4 +1,4 @@
-import { Form } from "../domain/form/form";
+import { Form } from "../../domain/form/form";
 import { TemplateMapper } from "./template-mapper";
 
 export class FormMapper {

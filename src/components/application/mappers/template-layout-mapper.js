@@ -1,4 +1,4 @@
-import { TemplateLayout } from "../domain/form/template-layout"
+import { TemplateLayout } from "../../domain/form/template-layout"
 
 export class TemplateLayoutMapper {
   static map(templateLayout, each = false) {

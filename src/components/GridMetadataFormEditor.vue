@@ -1,9 +1,9 @@
 <script>
 import Vue from 'vue';
-import { FormEditorUI } from './ui/form-editor-ui';
+import { FormController } from './presentation/form-controller';
 import { FakeUserProfileGateway } from './fake-user-profile-gateway';
-import { LoadFormAndMetadataListUseCase } from './use-cases/load-form-and-metadata-list-use-case';
 import { FormLayoutService } from './ui/form-layout-service';
+import { LoadFormAndMetadataListUseCase } from './application/use-cases/load-form-and-metadata-list-use-case';
 
 export default {
   name: 'GridMetadataForm',
@@ -18,7 +18,7 @@ export default {
       mouseUpCallback: this.onResizeEnd.bind(this),
       formLayoutService: new FormLayoutService(),
       loaded: false,
-      formEditor: new FormEditorUI(new LoadFormAndMetadataListUseCase(new FakeUserProfileGateway())),
+      formEditor: new FormController(new LoadFormAndMetadataListUseCase(new FakeUserProfileGateway())),
       dragging: {
         columnId: null,
         row: {

@@ -1,4 +1,4 @@
-import { Size } from "../domain/form/size"
+import { Size } from "../../domain/form/size"
 
 export class SizeMapper {
   static map(size, each = false) {

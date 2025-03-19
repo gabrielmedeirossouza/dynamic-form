@@ -1,4 +1,4 @@
-import { Presentation } from "../domain/metadata/presentation";
+import { Presentation } from "../../domain/metadata/presentation";
 
 export class PresentationMapper {
   static map(presentation, each = false) {

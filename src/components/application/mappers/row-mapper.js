@@ -1,4 +1,4 @@
-import { Row } from "../domain/form/row";
+import { Row } from "../../domain/form/row";
 import { ColumnMapper } from "./column-mapper";
 
 export class RowMapper {

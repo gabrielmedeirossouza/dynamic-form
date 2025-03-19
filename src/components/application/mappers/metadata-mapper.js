@@ -1,4 +1,4 @@
-import { Metadata } from "../domain/metadata/metadata";
+import { Metadata } from "../../domain/metadata/metadata";
 import { PresentationMapper } from "./presentation-mapper";
 import { ValidationMapper } from "./validation-mapper";
 

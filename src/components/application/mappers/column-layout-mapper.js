@@ -1,4 +1,4 @@
-import { ColumnLayout } from "../domain/form/column-layout";
+import { ColumnLayout } from "../../domain/form/column-layout";
 import { SizeMapper } from "./size-mapper";
 
 export class ColumnLayoutMapper {

@@ -1,4 +1,4 @@
-import { Validation } from "../domain/metadata/validation";
+import { Validation } from "../../domain/metadata/validation";
 
 export class ValidationMapper {
   static map(validation, each = false) {

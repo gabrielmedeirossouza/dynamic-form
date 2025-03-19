@@ -1,5 +1,5 @@
-import { MetadataMapper } from "../application-mappers/metadata-mapper"
-import { MetadataRepositoryRegistry } from "../repositories/metadata-repository-registry"
+import { MetadataMapper } from "../mappers/metadata-mapper"
+import { MetadataRepositoryRegistry } from "../metadata-repository-registry"
 
 export class GetFormMetadataListUseCase {
   execute(formId) {

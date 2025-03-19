@@ -1,4 +1,4 @@
-import { FormMapper } from "../application-mappers/form-mapper"
+import { FormMapper } from "../application/mappers/form-mapper"
 
 export class InMemoryFormRepository {
   static #mappedForms = []

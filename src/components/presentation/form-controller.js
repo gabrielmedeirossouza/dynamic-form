@@ -1,21 +1,21 @@
-import { reactive, set } from "vue";
-import { MetadataRepositoryRegistry } from "../repositories/metadata-repository-registry";
-import { InMemoryFormRepository } from "../repositories/in-memory-form-repository";
-import { InMemoryMetadataRepository } from "../repositories/in-memory-metadata-repository";
-import { CheckTemplateIsValidUseCase } from "../use-cases/check-template-is-valid-use-case";
-import { CreateDraftTemplateUseCase } from "../use-cases/create-draft-template-use-case";
-import { GetFormMetadataListUseCase } from "../use-cases/get-form-metadata-list-use-case";
-import { GetFormUseCase } from "../use-cases/get-form-use-case";
-import { MoveTemplateColumnToNewRowUseCase } from "../use-cases/move-template-column-to-new-row-use-case";
-import { MoveTemplateColumnUseCase } from "../use-cases/move-template-column-use-case";
-import { SaveDraftTemplateUseCase } from "../use-cases/save-draft-template-use-case";
-import { FormUiMapper } from "../ui-mappers/form-ui-mapper";
-import { ResizeColumnUseCase } from "../use-cases/resize-column-use-case";
-import { ChangeColumnTypeUseCase } from "../use-cases/change-column-type-use-case";
-import { TemplateUiMapper } from "../ui-mappers/template-ui-mapper";
-import { GetTemplateByIdUseCase } from "../use-cases/get-template-by-id-use-case";
+import { reactive, set } from "vue"
+import { MetadataRepositoryRegistry } from "../application/metadata-repository-registry"
+import { InMemoryFormRepository } from "../infra/in-memory-form-repository"
+import { InMemoryMetadataRepository } from "../infra/in-memory-metadata-repository"
+import { CheckTemplateIsValidUseCase } from "../application/use-cases/check-template-is-valid-use-case"
+import { CreateDraftTemplateUseCase } from "../application/use-cases/create-draft-template-use-case"
+import { GetFormMetadataListUseCase } from "../application/use-cases/get-form-metadata-list-use-case"
+import { GetFormUseCase } from "../application/use-cases/get-form-use-case"
+import { MoveTemplateColumnToNewRowUseCase } from "../application/use-cases/move-template-column-to-new-row-use-case"
+import { MoveTemplateColumnUseCase } from "../application/use-cases/move-template-column-use-case"
+import { SaveDraftTemplateUseCase } from "../application/use-cases/save-draft-template-use-case"
+import { ResizeColumnUseCase } from "../application/use-cases/resize-column-use-case"
+import { ChangeColumnTypeUseCase } from "../application/use-cases/change-column-type-use-case"
+import { GetTemplateByIdUseCase } from "../application/use-cases/get-template-by-id-use-case"
+import { TemplateUiMapper } from "./mappers/template-ui-mapper"
+import { FormUiMapper } from "./mappers/form-ui-mapper"
 
-export class FormEditorUI {
+export class FormController {
   $form = reactive({})
 
   #form
