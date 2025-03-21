@@ -1,241 +1,73 @@
 <script>
-import Vue from 'vue';
-import { FormController } from './presentation/form-controller';
+import { MetadataRepositoryRegistry } from './application/metadata-repository-registry'
+import { InMemoryFormRepository } from './infra/in-memory-form-repository';
+import { InMemoryMetadataRepository } from './infra/in-memory-metadata-repository';
 import { FakeUserProfileGateway } from './fake-user-profile-gateway';
-import { FormLayoutService } from './ui/form-layout-service';
+import { FormLayoutService } from './ui/services/form-layout-service';
 import { LoadFormAndMetadataListUseCase } from './application/use-cases/load-form-and-metadata-list-use-case';
+import { FormContext } from './ui/contexts/form-context';
+import { GetFormUseCase } from './application/use-cases/get-form-use-case';
+import { GetTemplateUseCase } from './application/use-cases/get-template-use-case';
+import { GetFormMetadataListUseCase } from './application/use-cases/get-form-metadata-list-use-case';
+import { FormSizeObserver } from './ui/form-size-observer';
+import { FormDragAndDropEventsAdapter } from './ui/form-drag-and-drop-events-adapter';
+import { MoveTemplateColumnUseCase } from './application/use-cases/move-template-column-use-case';
+import { MoveTemplateColumnToNewRowUseCase } from './application/use-cases/move-template-column-to-new-row-use-case';
+import { FormResizingEventsAdapter } from './ui/form-resizing-events-adapter';
+import { ResizeColumnUseCase } from './application/use-cases/resize-column-use-case';
+import { GetTotalRowPercentageUsageUseCase } from './application/use-cases/get-total-row-percentage-usage-use-case';
+
+MetadataRepositoryRegistry.formRepository = new InMemoryFormRepository()
+MetadataRepositoryRegistry.metadataRepository = new InMemoryMetadataRepository()
+
+const getFormUseCase = new GetFormUseCase()
+const getTemplateUseCase = new GetTemplateUseCase()
+const getFormMetadataListUseCase = new GetFormMetadataListUseCase()
+const moveTemplateColumnUseCase = new MoveTemplateColumnUseCase()
+const moveTemplateColumnToNewRowUseCase = new MoveTemplateColumnToNewRowUseCase()
+const resizeColumnUseCase = new ResizeColumnUseCase()
+const getTotalRowPercentageUsageUseCase = new GetTotalRowPercentageUsageUseCase()
+const loadFormAndMetadataListUseCase = new LoadFormAndMetadataListUseCase(new FakeUserProfileGateway())
+
+const formContext = new FormContext(getFormUseCase, getTemplateUseCase, getFormMetadataListUseCase)
+const formSizeObserver = new FormSizeObserver()
+const formLayoutService = new FormLayoutService(formSizeObserver)
+const formDragAndDropEventsAdapter = new FormDragAndDropEventsAdapter(formContext, moveTemplateColumnUseCase, moveTemplateColumnToNewRowUseCase)
+const formResizingEventsAdapter = new FormResizingEventsAdapter(formContext, formLayoutService, resizeColumnUseCase, getTotalRowPercentageUsageUseCase)
 
 export default {
   name: 'GridMetadataForm',
-  props: {
-    components: Object
-  },
+
   data() {
     return {
-      rowWidth: 0,
-      resizeObserver: null,
-      mouseMoveCallback: this.onResize.bind(this),
-      mouseUpCallback: this.onResizeEnd.bind(this),
-      formLayoutService: new FormLayoutService(),
-      loaded: false,
-      formEditor: new FormController(new LoadFormAndMetadataListUseCase(new FakeUserProfileGateway())),
-      dragging: {
-        columnId: null,
-        row: {
-          position: null,
-          targetRowId: null,
-          triggerId: null
-        },
-        column: {
-          position: null,
-          targetColumnId: null,
-          triggerId: null
-        }
-      },
-
-      resizing: {
-        started: false,
-        row: null,
-        column: null,
-        targetElement: null,
-        startedAt: 0
-      },
-      wireframeWidth: 0
+      context: formContext,
+      formSizeObserver: formSizeObserver,
+      layoutService: formLayoutService,
+      dragAndDropEventsAdapter: formDragAndDropEventsAdapter,
+      resizingEventsAdapter: formResizingEventsAdapter,
     }
   },
 
   computed: {
-    isDragging() {
-      return this.dragging.columnId !== null
+    isLoaded() {
+      return this.context.currentTemplate.id
     },
-
-    isDraggingColumn() {
-      return this.dragging.column.targetColumnId !== null 
-    },
-
-    isDraggingRow() {
-      return this.dragging.row.targetRowId !== null
-    }
   },
 
   created() {
-    this.formEditor.loadFormAndMetadataList()
-      .then(() => {
-        this.loaded = true
-        this.$nextTick(() => {
-          this.resizeObserver = new ResizeObserver(() => {
-            this.rowWidth = this.$refs.rowContainerRef.getBoundingClientRect().width
-          });
+    loadFormAndMetadataListUseCase.execute()
+    .then((formId) => {
+      this.context.update(formId)
 
-          this.resizeObserver.observe(this.$refs.rowContainerRef);
-        })
+      this.$nextTick(() => {
+        this.formSizeObserver.setRowElement(this.$refs.rowContainerRef)
       })
-
-    window.addEventListener("mousemove", this.mouseMoveCallback)
-    window.addEventListener("mouseup", this.mouseUpCallback)
+    })
   },
 
   beforeDestroy() {
-    window.removeEventListener("mousemove", this.mouseMoveCallback)
-    window.removeEventListener("mouseup", this.mouseUpCallback)
-
-    if (this.resizeObserver) {
-      this.resizeObserver.disconnect();
-    }
-  },
-
-  methods: {
-    reset() {
-      Vue.set(this, "dragging", {
-        columnId: null,
-        row: {
-          position: null,
-          targetRowId: null,
-          triggerId: null
-        },
-        column: {
-          position: null,
-          targetColumnId: null,
-          triggerId: null
-        }
-      })
-    },
-
-    onDragColumnStart(columnId) {
-      this.dragging.columnId = columnId
-    },
-
-    onDragColumnMoveOverColumnTrigger(event, triggerId, triggerPosition, columnTargetId) {
-      const isColumn = (event.target instanceof HTMLElement) && event.target.dataset.isColumn
-      if (!isColumn) return
-
-      this.dragging.row.targetRowId = null
-      this.dragging.row.position = null
-      this.dragging.row.triggerId = null
-
-      this.dragging.column.triggerId = triggerId
-      this.dragging.column.position = triggerPosition
-      this.dragging.column.targetColumnId = columnTargetId
-    },
-
-    onDragColumnMoveOverRowTrigger(event, triggerId, triggerPosition, targetRowId) {
-      const isRow = (event.target instanceof HTMLElement) && event.target.dataset.isRow
-      if (!isRow) return
-
-      this.dragging.column.triggerId = null
-      this.dragging.column.position = null
-      this.dragging.column.targetColumnId = null
-
-      this.dragging.row.triggerId = triggerId
-      this.dragging.row.position = triggerPosition
-      this.dragging.row.targetRowId = targetRowId
-    },
-
-    onDragDropColumn(event) {
-      event.preventDefault()
-      const isRow = (event.target instanceof HTMLElement) && event.target.dataset.isRow
-      const isColumn = (event.target instanceof HTMLElement) && event.target.dataset.isColumn
-      if (!this.isDragging || (!isRow && !isColumn)) {
-        this.reset()
-        return
-      }
-
-      if (this.isDraggingColumn) {
-        this.formEditor.moveTemplateColumn(
-          this.formEditor.$form.mainTemplate.id,
-          this.dragging.columnId,
-          this.dragging.column.position,
-          this.dragging.column.targetColumnId
-        )
-      }
-
-      if (this.isDraggingRow) {
-        this.formEditor.moveTemplateColumnToNewRow(
-          this.formEditor.$form.mainTemplate.id,
-          this.dragging.columnId,
-          this.dragging.row.position,
-          this.dragging.row.targetRowId
-        )
-      }
-
-      this.reset()
-    },
-
-    onDragEnd() {
-      this.reset()
-    },
-
-    onResizeStart(event, row, column) {
-      this.resizing.started = true
-      this.resizing.row = row
-      this.resizing.column = column
-      this.resizing.targetElement = event.target
-      this.resizing.startedAt = event.x
-    },
-
-    onResize(event) {
-      if (!this.resizing.started) return
-
-      const mouseDiff = event.x - this.resizing.startedAt
-
-      if (this.resizing.column.layout.size.isFixed) {
-        const columnSize = this.resizing.column.layout.size.value + mouseDiff
-        
-        if (columnSize < 100 || columnSize > 320) return
-  
-        this.formEditor.resizeColumn(
-          this.formEditor.$form.mainTemplate.id,
-          this.resizing.column.id,
-          columnSize,
-          this.resizing.column.layout.size.min
-        )
-
-        return
-      }
-
-      const percentageWidthInPixels = this.formLayoutService.getFieldWidth(
-        this.rowWidth,
-        this.formEditor.$form.mainTemplate,
-        this.resizing.row,
-        this.resizing.column
-      )
-      const totalUsablePercentageAreaInPixels = this.formLayoutService.getTotalUsablePercentageAreaInPixels(
-        this.rowWidth,
-        this.formEditor.$form.mainTemplate,
-        this.resizing.row
-      )
-
-      const normalizedPercentageArea = (percentageWidthInPixels + mouseDiff) / totalUsablePercentageAreaInPixels
-      const columnSize = normalizedPercentageArea * 100
-      const percentageDiff = (mouseDiff / totalUsablePercentageAreaInPixels) * 100
-
-      const outsidePercentageRange =
-        columnSize < 20 ||
-        columnSize > 100 ||
-        (percentageDiff + this.formLayoutService.getTotalRowPercentageUsage(this.resizing.row)) > 100
-      if (outsidePercentageRange) return
-
-      this.formEditor.resizeColumn(
-        this.formEditor.$form.mainTemplate.id,
-        this.resizing.column.id,
-        columnSize,
-        this.resizing.column.layout.size.min
-      )
-    },
-
-    onResizeEnd() {
-      if (!this.resizing.started) return
-      this.resizing.started = false
-      this.resizing.row = null
-      this.resizing.column = null
-      this.resizing.targetElement = null
-      this.resizing.startedAt = 0
-      this.wireframeWidth = 0
-    },
-
-    newTemplate() {
-
-    }
+    this.resizingEventsAdapter.clearListeners()
+    this.formSizeObserver.disconnect()
   }
 }
 </script>
@@ -243,24 +75,25 @@ export default {
 <template>
   <form
     class="grid-metadata-form"
-    :class="{ 'is-dragging': isDragging }"
+    :class="{ 'is-dragging': dragAndDropEventsAdapter.isDragging }"
   >
     <ul
-      v-if="loaded"
+      v-if="isLoaded"
       class="row-container"
       ref="rowContainerRef"
       @dragover.prevent=""
-      @drop="onDragDropColumn"
-      @dragend="onDragEnd"
+      @drop="dragAndDropEventsAdapter.onDrop"
+      @dragend="dragAndDropEventsAdapter.onStop"
     >
       <li
-        v-for="(row, rowIndex) in formEditor.$form.mainTemplate.rows"
-        :key="rowIndex"
+        v-for="(row, rowIndex) in context.currentTemplate.rows"
+        :key="row.id"
       >
         <div
           class="row-container__trigger"
           data-is-row="true"
-          @dragover="onDragColumnMoveOverRowTrigger($event, rowIndex, 'before', row.id)"
+          data-position="before"
+          :data-target-id="row.id"
         ></div>
 
         <ul class="column-container">
@@ -268,31 +101,32 @@ export default {
             v-for="(column, columnIndex) in row.columns"
             :key="column.id"
             class="field-container"
-            :class="{ 'is-dragging': isDragging }"
+            :class="{ 'is-dragging': dragAndDropEventsAdapter.isDragging }"
           >
             <div
               class="field-container__trigger"
               data-is-column="true"
-              @dragover="onDragColumnMoveOverColumnTrigger($event, columnIndex, 'before', column.id)"
+              data-position="before"
+              :data-target-id="column.id"
             ></div>
 
             <div
               class="field-container__wireframe"
               :style="{
-                '--width': formLayoutService.getFieldWidth(rowWidth, formEditor.$form.mainTemplate, row, column) + 'px',
+                '--width': layoutService.getFieldWidthInUnits(context.currentTemplate, row, column) + 'px',
                 '--min-width': column.layout.size.staticValue + 'px'
               }"
             >
               <div
                 class="wireframe-drag-trigger"
                 draggable="true"
-                @dragstart="onDragColumnStart(column.id)"
+                @dragstart="dragAndDropEventsAdapter.onDrag(column.id)"
               >
                 {{ column.metadata.label }}
               </div>
               <div
                 class="wireframe-resize-trigger"
-                @mousedown.prevent="onResizeStart($event, row, column)"
+                @mousedown.prevent="resizingEventsAdapter.onStartResizing($event, row, column)"
               ></div>
             </div>
 
@@ -300,31 +134,34 @@ export default {
               v-if="columnIndex === row.columns.length - 1"
               class="field-container__trigger"
               data-is-column="true"
-              @dragover="onDragColumnMoveOverColumnTrigger($event, columnIndex, 'after', column.id)"
+              data-position="after"
+              :data-target-id="column.id"
             ></div>
           </li>
         </ul>
 
         <div
-          v-if="rowIndex === formEditor.$form.mainTemplate.rows.length - 1"
+          v-if="rowIndex === context.currentTemplate.rows.length - 1"
           class="row-container__trigger"
           data-is-row="true"
-          @dragover="onDragColumnMoveOverRowTrigger($event, rowIndex, 'after', row.id)"
+          data-position="after"
+          :data-target-id="row.id"
         ></div>
       </li>
     </ul>
 
     <button
-      v-if="formEditor.$form.isFormResponsive"
+      v-if="context.currentForm.isFormResponsive"
       type="button"
+      @click=""
     >
       Salvar
     </button>
 
     <button
       v-else
-      @click="newTemplate"
       type="button"
+      @click=""
     >
       Próximo
     </button>
@@ -423,7 +260,7 @@ export default {
                 #fff 8px
             );
 
-            &::after {
+            /* &::after {
               content: '';
               position: absolute;
               left: 0;
@@ -435,7 +272,7 @@ export default {
               box-sizing: border-box;
               border-radius: 8px;
               z-index: -1;
-            }
+            } */
 
             .wireframe-resize-trigger {
               position: absolute;

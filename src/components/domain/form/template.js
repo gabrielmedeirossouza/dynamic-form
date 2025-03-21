@@ -98,6 +98,28 @@ export class Template {
     throw new Error(`Column with id ${columnId} does not exists.`)
   }
 
+  getRowById(rowId) {
+    const row = this.#rows.find(r => r.id === rowId)
+    if (!row) throw new Error(`Row with id ${rowId} doest not exists.`)
+
+    return row
+  }
+
+  getColumnById(columnId) {
+    for (const row of this.#rows) {
+      if (!row.existsColumn(columnId)) continue
+
+      return row.getColumnById(columnId)
+    }
+
+    throw new Error(`Column with id ${columnId} does not exists.`)
+  }
+
+  getTotalRowPercentageUsage(rowId) {
+    const row = this.getRowById(rowId)
+    return row.getTotalRowPercentageUsage()
+  }
+
   #removeEmptyRows() {
     this.#rows = this.#rows.filter(row => row.columns.length > 0)
   }

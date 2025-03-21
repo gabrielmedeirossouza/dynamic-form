@@ -104,6 +104,16 @@ export class Row {
     return column
   }
 
+  getTotalRowPercentageUsage() {
+    const totalUsage = this.columns.reduce((acc, column) => {
+      if (!column.layout.size.isPercentage) return acc
+
+      return acc + column.layout.size.value
+    }, 0)
+
+    return totalUsage
+  }
+
   #resizeProportionalPercentageColumns() {
     for (const column of this.columns) {
       if (column.layout.size.isFixed) continue

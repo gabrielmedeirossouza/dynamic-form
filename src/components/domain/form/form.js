@@ -89,4 +89,9 @@ export class Form {
 
     return template
   }
+
+  getColumnById(templateId, columnId) {
+    const template = this.getTemplateById(templateId)
+    return template.getColumnById(columnId)
+  }
 }

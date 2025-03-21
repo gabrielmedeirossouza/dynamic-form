@@ -1,12 +1,14 @@
 import { MetadataRepositoryRegistry } from "../metadata-repository-registry"
 
 export class LoadFormAndMetadataListUseCase {
+  #formEditorGateway
+
   constructor(formEditorGateway) {
-    this.formEditorGateway = formEditorGateway
+    this.#formEditorGateway = formEditorGateway
   }
 
   async execute() {
-    const [form, metadataList] = await this.formEditorGateway.fetch()
+    const [form, metadataList] = await this.#formEditorGateway.fetch()
 
     MetadataRepositoryRegistry.formRepository.load([form])
     MetadataRepositoryRegistry.metadataRepository.load(metadataList)

@@ -3,6 +3,7 @@ import { TemplateUiMapper } from "./template-ui-mapper";
 export class FormUiMapper {
   static map(form, metadataList) {
     return {
+      id: form.id,
       metadataList: metadataList,
       templates: form.templates.map(data => TemplateUiMapper.map(data, metadataList)),
       mainTemplate: TemplateUiMapper.map(form.mainTemplate, metadataList),
