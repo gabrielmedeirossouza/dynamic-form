@@ -20,8 +20,8 @@ export class FormLayoutService {
     const fixedColumns = row.columns.filter(c => c.layout.size.isFixed)
     const totalFixedValue = fixedColumns.reduce((acc, c) => acc + c.layout.size.value, 0)
     const totalGap = template.layout.rowGap * (row.columns.length + 1)
-    const displayRowWidth = this.#formSizeObserver.rowWidth
+    const rowWidth = this.#formSizeObserver.rowWidth.value
 
-    return displayRowWidth - totalFixedValue - totalGap
+    return rowWidth - totalFixedValue - totalGap
   }
 }

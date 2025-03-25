@@ -7,10 +7,11 @@ export class Template {
   #breakpoint
   #rows
 
-  constructor(id, layout, rows, draft = false) {
+  constructor(id, layout, rows, main, draft) {
     this.#id = id
     this.#layout = layout
     this.#rows = rows
+    this.main = main
     this.draft = draft
     this.#calculateBreakpoint()
   }
@@ -125,8 +126,25 @@ export class Template {
   }
 
   #calculateBreakpoint() {
-    const breakpointRows = this.#rows.map(row => row.breakpoint)
-    const breakpoint = Math.max(...breakpointRows)
+    let breakpoint = {}
+
+    for (const row of this.#rows) {
+      const totalGap = this.#layout.rowGap * (row.columns.length + 1)
+      const totalBreakpointValue = row.breakpoint + totalGap
+
+      if (!breakpoint.rowId) {
+        breakpoint.rowId = row.id
+        breakpoint.value = totalBreakpointValue
+        continue
+      }
+
+      if (totalBreakpointValue > breakpoint.value) {
+        breakpoint.rowId = row.id
+        breakpoint.value = totalBreakpointValue
+      }
+    }
+
+
     this.#breakpoint = breakpoint
   }
 }

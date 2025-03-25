@@ -1,11 +1,10 @@
-import { ref } from "vue"
-
 export class FormResizingEventsAdapter {
   #formContext
   #formLayoutService
   #resizeColumnUseCase
-  #getTotalRowPercentageUsageUseCase
+  #checkIsValidResizePercentageColumnUseCase
 
+  isResizing = false
   #row = null
   #column = null
   #startX = 0
@@ -13,13 +12,11 @@ export class FormResizingEventsAdapter {
   #boundOnResize = this.#onResize.bind(this)
   #boundOnStopResizing = this.#onStopResizing.bind(this)
 
-  isResizing = ref(false)
-
-  constructor(formContext, formLayoutService, resizeColumnUseCase, getTotalRowPercentageUsageUseCase) {
+  constructor(formContext, formLayoutService, resizeColumnUseCase, checkIsValidResizePercentageColumnUseCase) {
     this.#formContext = formContext
     this.#formLayoutService = formLayoutService
     this.#resizeColumnUseCase = resizeColumnUseCase
-    this.#getTotalRowPercentageUsageUseCase = getTotalRowPercentageUsageUseCase
+    this.#checkIsValidResizePercentageColumnUseCase = checkIsValidResizePercentageColumnUseCase
 
     window.addEventListener("mousemove", this.#boundOnResize)
     window.addEventListener("mouseup", this.#boundOnStopResizing)
@@ -75,14 +72,20 @@ export class FormResizingEventsAdapter {
     const fieldWidth = this.#formLayoutService.getFieldWidthInUnits(this.#formContext.currentTemplate, this.#row, this.#column)
     const totalUsablePercentageArea = this.#formLayoutService.getTotalUsablePercentageAreaInUnits(this.#formContext.currentTemplate, this.#row)
     const normalizedPercentageArea = (fieldWidth + mouseDiff) / totalUsablePercentageArea
-    const size = normalizedPercentageArea * 100
+    const size = Math.round(normalizedPercentageArea * 100)
 
-    const newTotalPercentageUsageArea = (mouseDiff / totalUsablePercentageArea) + this.#getTotalRowPercentageUsageUseCase.execute(this.#formContext.currentForm.id, this.#formContext.currentTemplate.id, this.#row.id)
+    const isValidResizePercentageValue = this.#checkIsValidResizePercentageColumnUseCase.execute(
+      this.#formContext.currentForm.id,
+      this.#formContext.currentTemplate.id,
+      this.#row.id,
+      this.#column.id,
+      size
+    )
 
     const outsidePercentageRange =
       size < 20 ||
       size > 100 ||
-      newTotalPercentageUsageArea > 100
+      !isValidResizePercentageValue
 
     if (outsidePercentageRange) return
 

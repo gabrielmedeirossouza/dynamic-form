@@ -7,8 +7,19 @@ export class FormUiMapper {
       metadataList: metadataList,
       templates: form.templates.map(data => TemplateUiMapper.map(data, metadataList)),
       mainTemplate: TemplateUiMapper.map(form.mainTemplate, metadataList),
-      minimumBreakpoint: form.minimumBreakpoint,
-      isFormResponsive: form.isFormResponsive
+      minimumBreakpoint: {
+        templateId: form.minimumBreakpoint.templateId,
+        rowId: form.minimumBreakpoint.rowId,
+        value: form.minimumBreakpoint.value
+      },
+      minimumFinalBreakpoint: {
+        templateId: form.minimumFinalBreakpoint.templateId,
+        rowId: form.minimumFinalBreakpoint.rowId,
+        value: form.minimumFinalBreakpoint.value
+      },
+      isFormResponsive: form.isFormResponsive,
+      existsDraftTemplate: form.existsDraftTemplate,
+      isValidDraftTemplate: form.isValidDraftTemplate
     }
   }
 }

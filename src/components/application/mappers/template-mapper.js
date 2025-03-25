@@ -9,8 +9,12 @@ export class TemplateMapper {
     return {
       id: template.id,
       layout: TemplateLayoutMapper.map(template.layout),
-      breakpoint: template.breakpoint,
+      breakpoint: {
+        id: template.breakpoint.rowId,
+        value: template.breakpoint.value
+      },
       rows: RowMapper.map(template.rows, true),
+      main: template.main,
       draft: template.draft
     }
   }
@@ -22,6 +26,7 @@ export class TemplateMapper {
       template.id,
       TemplateLayoutMapper.from(template.layout),
       RowMapper.from(template.rows, true),
+      template.main,
       template.draft
     )
   }

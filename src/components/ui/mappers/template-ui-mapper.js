@@ -8,8 +8,12 @@ export class TemplateUiMapper {
     return {
       id: template.id,
       layout: TemplateLayoutUiMapper.map(template.layout),
-      breakpoint: template.breakpoint,
+      breakpoint: {
+        rowId: template.breakpoint.rowId,
+        value: template.breakpoint.value
+      },
       rows: template.rows.map(data => RowUiMapper.map(data, metadataList)),
+      main: template.main,
       draft: template.draft
     }
   }

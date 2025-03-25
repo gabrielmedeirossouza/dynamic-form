@@ -70,11 +70,11 @@ export class Row {
     }
 
     if (this.#hasAvailablePercentageSpace) {
-      column.changeSize("percentage", this.#percentageRemaining, column.layout.size.min)
+      column.changeSize("percentage", this.#percentageRemaining, 320)
       return
     }
 
-    column.changeSize("percentage", this.#percentageProportion, column.layout.size.min)
+    column.changeSize("percentage", this.#percentageProportion, 320)
     this.#resizeProportionalPercentageColumns()
   }
 
@@ -104,14 +104,18 @@ export class Row {
     return column
   }
 
-  getTotalRowPercentageUsage() {
+  checkIsValidResizePercentageColumn(columnId, value) {
     const totalUsage = this.columns.reduce((acc, column) => {
       if (!column.layout.size.isPercentage) return acc
+
+      if (column.id === columnId) {
+        return acc + value
+      }
 
       return acc + column.layout.size.value
     }, 0)
 
-    return totalUsage
+    return totalUsage <= 100
   }
 
   #resizeProportionalPercentageColumns() {

@@ -28,7 +28,7 @@ const mainTemplate = new Template(
         new Column(
           crypto.randomUUID(),
           nome.id,
-          new ColumnLayout(new Size("percentage", 100, 200))
+          new ColumnLayout(new Size("percentage", 100, 320))
         ),
       ]
     ),
@@ -39,12 +39,12 @@ const mainTemplate = new Template(
         new Column(
           crypto.randomUUID(),
           sobrenome.id,
-          new ColumnLayout(new Size("percentage", 50, 200))
+          new ColumnLayout(new Size("percentage", 50, 320))
         ),
         new Column(
           crypto.randomUUID(),
           email.id,
-          new ColumnLayout(new Size("percentage", 50, 200))
+          new ColumnLayout(new Size("percentage", 50, 320))
         ),
       ]
     ),
@@ -59,7 +59,9 @@ const mainTemplate = new Template(
         ),
       ]
     ),
-  ]
+  ],
+  true,
+  false
 )
 
 const form = new Form(

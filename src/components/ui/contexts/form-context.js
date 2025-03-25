@@ -1,10 +1,10 @@
-import { reactive, set } from "vue"
+import { set } from "vue"
 import { FormUiMapper } from "../mappers/form-ui-mapper"
 import { TemplateUiMapper } from "../mappers/template-ui-mapper"
 
 export class FormContext {
-  currentForm = reactive({})
-  currentTemplate = reactive({})
+  currentForm = {}
+  currentTemplate = {}
 
   #getFormUseCase
   #getTemplateUseCase
@@ -16,7 +16,12 @@ export class FormContext {
     this.#getFormMetadataListUseCase = getFormMetadataListUseCase
   }
 
-  changeCurrentTemplate(template) {
+  useTemplate(templateId) {
+    const form = this.#getFormUseCase.execute(this.currentForm.id)
+    set(this, "currentForm", FormUiMapper.map(form, this.currentForm.metadataList))
+
+    const template = this.currentForm.templates.find(t => t.id === templateId)
+
     set(this, "currentTemplate", template)
   }
 
