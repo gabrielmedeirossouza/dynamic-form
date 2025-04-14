@@ -11,10 +11,10 @@ import {
   getFormUseCase,
   layoutService,
   changeColumnTypeUseCase
-} from './ui/bootstrap';
+} from "./ui/bootstrap";
 
 export default {
-  name: 'GridMetadataForm',
+  name: "GridMetadataForm",
 
   data() {
     return {
@@ -70,7 +70,7 @@ export default {
     breakpointLine() {
       if (!this.isLoaded) return "0"
 
-      return context.currentTemplate.breakpoint.value + 'px'
+      return context.currentTemplate.breakpoint.value + "px"
     },
 
     templateWidth() {
@@ -147,13 +147,13 @@ export default {
     getColumnWidth(row, column) {
       if (!this.isLoaded) return "0"
 
-      return layoutService.getFieldWidthInUnits(this.context.currentTemplate, row, column) + 'px'
+      return layoutService.getFieldWidthInUnits(this.context.currentTemplate, row, column) + "px"
     },
 
     getColumnMinWidth(column) {
       if (column.layout.size.isFixed) return "0"
       
-      return column.layout.size.min + 'px'
+      return column.layout.size.min + "px"
     },
 
     getTemplateLabel(index) {
@@ -227,35 +227,35 @@ export default {
 
     <button
       type="button"
-      @click="edit()"
       :disabled="showEditButton"
+      @click="edit()"
     >
       Editar
     </button>
 
     <button
       type="button"
-      @click="removeTemplate()"
       :disabled="!showRemoveTemplateButton"
+      @click="removeTemplate()"
     >
       Excluir modelo
     </button>
 
-    <p v-html="templateDescription"></p>
-    <p v-html="templateResolutionWarning"></p>
+    <p v-html="templateDescription" />
+    <p v-html="templateResolutionWarning" />
 
     <button
       type="button"
-      @click="save()"
       :disabled="!showSaveButton"
+      @click="save()"
     >
       Salvar
     </button>
 
     <button
       type="button"
-      @click="createDraftTemplate()"
       :disabled="!showCreateDraftTemplateButton"
+      @click="createDraftTemplate()"
     >
       Novo modelo responsivo
     </button>
@@ -265,25 +265,36 @@ export default {
       :class="{ 'is-dragging': isDragging }"
     >
       <section class="device-area">
-        <div class="min-mobile">Responsivo</div>
-        <div class="mobile">Celulares</div>
-        <div class="tablet">Tablets</div>
-        <div class="desktop">Desktop</div>
-        <div class="breakpoint" :style="{ '--breakpoint': breakpointLine }"></div>
+        <div class="min-mobile">
+          Responsivo
+        </div>
+        <div class="mobile">
+          Celulares
+        </div>
+        <div class="tablet">
+          Tablets
+        </div>
+        <div class="desktop">
+          Desktop
+        </div>
+        <div
+          class="breakpoint"
+          :style="{ '--breakpoint': breakpointLine }"
+        />
       </section>
 
       <ul
         ref="rowContainerRef"
         class="row-container"
         :class="{ 'is-editing': isEditing }"
+        :style="{ '--width': templateWidth }"
         @dragover.prevent=""
         @drop="dragAndDropEventsAdapter.onDrop"
         @dragend="dragAndDropEventsAdapter.onStop"
-        :style="{ '--width': templateWidth }"
       >
         <li
-          v-if="isLoaded"
           v-for="(row, rowIndex) in currentTemplateRows"
+          v-if="isLoaded"
           :key="row.id"
         >
           <div
@@ -291,7 +302,7 @@ export default {
             data-is-row="true"
             data-position="before"
             :data-target-id="row.id"
-          ></div>
+          />
   
           <ul class="column-container">
             <li
@@ -305,7 +316,7 @@ export default {
                 data-is-column="true"
                 data-position="before"
                 :data-target-id="column.id"
-              ></div>
+              />
   
               <div
                 class="field-container__wireframe"
@@ -328,15 +339,25 @@ export default {
 
                   <menu :class="{ 'is-dragging': isDragging, 'is-resizing': isResizing }">
                     <div>
-                      <button type="button" @click="changeColumnType(column.id, 'fixed')">Fixo</button>
-                      <button type="button" @click="changeColumnType(column.id, 'percentage')">Responsivo</button>
+                      <button
+                        type="button"
+                        @click="changeColumnType(column.id, 'fixed')"
+                      >
+                        Fixo
+                      </button>
+                      <button
+                        type="button"
+                        @click="changeColumnType(column.id, 'percentage')"
+                      >
+                        Responsivo
+                      </button>
                     </div>
                   </menu>
                 </div>
                 <div
                   class="wireframe-resize-trigger"
                   @mousedown.prevent="resizingEventsAdapter.onStartResizing($event, row, column)"
-                ></div>
+                />
               </div>
   
               <div
@@ -345,7 +366,7 @@ export default {
                 data-is-column="true"
                 data-position="after"
                 :data-target-id="column.id"
-              ></div>
+              />
             </li>
           </ul>
   
@@ -355,7 +376,7 @@ export default {
             data-is-row="true"
             data-position="after"
             :data-target-id="row.id"
-          ></div>
+          />
         </li>
       </ul>
     </form>

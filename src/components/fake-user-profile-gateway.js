@@ -23,7 +23,7 @@ const mainTemplate = new Template(
         new Column(
           crypto.randomUUID(),
           cpf.id,
-          new ColumnLayout(new Size("fixed", 120))
+          new ColumnLayout(new Size("fixed", 120, undefined))
         ),
         new Column(
           crypto.randomUUID(),
@@ -43,6 +43,8 @@ const mainTemplate = new Template(
         ),
         new Column(
           crypto.randomUUID(),
+
+      
           email.id,
           new ColumnLayout(new Size("percentage", 50, 320))
         ),
