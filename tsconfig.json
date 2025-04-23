@@ -7,8 +7,8 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "strictPropertyInitialization": false,
-    "baseUrl": "./"
+    "strictPropertyInitialization": false
   },
+  "types": ["vitest/globals"],
   "include": ["src/**/*.ts"]
 }

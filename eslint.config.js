@@ -52,6 +52,8 @@ export default defineConfig([
       "no-trailing-spaces": "error",
       "eol-last": "error",
       "unicorn/no-array-for-each": "off",
+      "unicorn/no-array-reduce": "off",
+      "unicorn/no-array-callback-reference": "off",
       "@typescript-eslint/explicit-function-return-type": "off",
       "@typescript-eslint/no-non-null-assertion": "off",
       "@typescript-eslint/no-explicit-any": "off",
@@ -65,6 +67,7 @@ export default defineConfig([
         "never"
       ],
       "comma-spacing": "error",
+      "comma-dangle": ["error", "never"],
       "quotes": [
         "error",
         "double"
@@ -73,6 +76,8 @@ export default defineConfig([
       "unicorn/numeric-separators-style": "off",
       "unicorn/no-useless-undefined": "off",
       "unicorn/error-message": "off",
+      "unicorn/no-array-method-this-argument": "off",
+      "unicorn/prefer-global-this": "off",
       "@typescript-eslint/no-namespace": "off",
       "@typescript-eslint/no-useless-constructor": "off",
       "@typescript-eslint/no-empty-function": "off",
